@@ -61,6 +61,73 @@ public class Snake extends Sprite{
 
     }
 
+    public void checkKeys(){
+
+        // should always face front
+        if(scene.keys.keyDown[KeyEvent.VK_W]){
+            this.setAngle(270);
+            this.changeSpeedBy(this.value);
+            if (this.speed > this.maxSpeed) {
+                this.setSpeed(this.maxSpeed);
+            }
+            //snake.wPressed = true;
+            //snake.move();
+        }
+        if(scene.keys.keyDown[KeyEvent.VK_D]){
+            this.imageDegree += 5;
+
+            if(this.imageDegree > 360){
+                this.setAngle(360);
+            }else{
+                this.setAngle((this.imageDegree));
+            }
+
+            this.changeSpeedBy(this.value);
+            if (this.speed > this.maxSpeed) {
+                this.setSpeed(this.maxSpeed);
+            }
+            //snake.wPressed = true;
+            //snake.move();
+        }
+
+        if(scene.keys.keyDown[KeyEvent.VK_A]){
+            this.imageDegree += 5;
+
+            if(this.imageDegree > 360){
+                this.setAngle(360);
+            }else{
+                this.setAngle((this.imageDegree));
+            }
+            this.changeSpeedBy(this.value);
+            if (this.speed > this.maxSpeed) {
+                this.setSpeed(this.maxSpeed);
+            }
+            //snake.wPressed = true;
+            //snake.move();
+        }
+        if(scene.keys.keyDown[KeyEvent.VK_S]){
+            this.setAngle(90);
+            this.changeSpeedBy(this.value);
+            if (this.speed > this.maxSpeed) {
+                this.setSpeed(this.maxSpeed);
+            }
+            //snake.wPressed = true;
+            //snake.move();
+        }
+
+
+        if(scene.keys.keyDown[KeyEvent.VK_SPACE]){
+            scene.tempAmmo = new Ammo(scene,this.centerX,this.centerY);
+            scene.tempAmmo.weaponAttack(this.imageDegree);
+            //tempAmmo.weaponAttack((int) Math.toRadians(snake.imgAngle));
+            scene.tempAmmo.print();
+            scene.ammo.addBullet(scene.tempAmmo);
+        }
+
+
+    }
+
+
 
 
     public void move(){

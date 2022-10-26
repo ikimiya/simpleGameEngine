@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Keyboard implements KeyListener {
 
 
-    Boolean[] keyDown;
+    boolean[] keyDown = new boolean[256];
     int currentkey = -1;
 
     public Keyboard(){
@@ -17,6 +17,7 @@ public class Keyboard implements KeyListener {
         for(int i = 0; i < 256; i++){
             keyDown[i] = false;
         }
+        //System.out.println(keyDown[0]);
     }
 
     public void clearKeys(KeyEvent e){
