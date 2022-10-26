@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 public class Sprite {
 
@@ -23,15 +24,16 @@ public class Sprite {
     int sceneHeight;
     int sceneWidth;
 
-    double imgAngle = 0;
-    double moveAngle = 0;
-    int imageDegree = 0;
+    double imgAngle;
+    double moveAngle;
+    int imageDegree;
 
     double speed = 0;
 
     Scene scene;
 
-    boolean visible;
+    boolean visible = true;
+    boolean boundWarp = true;
 
     public Sprite(Scene scene, String imagePath, int width, int height){
         this.scene = scene;
@@ -80,10 +82,18 @@ public class Sprite {
     }
 
 
-
     // public void draw
     public void draw(Graphics g){
-        //g.drawImage(image,this.x,this.y,this.width,this.height,null);
+
+        if(visible){
+            Graphics2D g2 = (Graphics2D)g;
+
+            AffineTransform original = g2.getTransform();
+            AffineTransform test = AffineTransform.getRotateInstance(Math.toRadians(0),this.centerX,this.centerY);
+
+            g2.setTransform(test);
+            g2.drawImage(this.getImage(),this.x,this.y,this.width,this.height,null);
+        }
 
     }
 
@@ -95,9 +105,12 @@ public class Sprite {
     }
 
     public void show(){
+        this.visible = true;
+
     }
 
     public void hide(){
+        this.visible = false;
     }
 
     public void calculateVector(){
@@ -105,24 +118,11 @@ public class Sprite {
         this.dy = (int) (this.speed * Math.sin((this.moveAngle)));
     }
 
-    public void vectorX(){
-    }
-
     public void setSpeed(double speed){
         this.speed = speed;
         this.calculateVector();
     }
 
-
-    public void changeSpeedX(int diff){
-        this.speed += diff;
-        this.dx = (int) (this.speed * Math.cos((this.moveAngle)));
-    }
-
-    public void changeSpeedY(int diff){
-        this.speed += diff;
-        this.dy = (int) (this.speed * Math.sin((this.moveAngle)));
-    }
 
 
     public void changeSpeedBy(int diff){
@@ -135,6 +135,7 @@ public class Sprite {
     }
 
     public void changeImageAngleBy(int degree){
+
 
     }
 
@@ -160,7 +161,9 @@ public class Sprite {
     }
 
     public void changeAngleBy(int degree){
-
+        this.imageDegree = (int)degree;
+        this.imgAngle = Math.toRadians(degree);
+        this.moveAngle =  Math.toRadians(degree);
     }
 
     public boolean spriteCollide(Sprite s){
@@ -189,25 +192,51 @@ public class Sprite {
     // CheckBounds wrap mechanci
     public void checkBounds(){
         // test scene boudns
+        if(boundWarp){
+            int leftBound = 0;
+            int rightBound = this.sceneWidth;
+            int topBound = 0;
+            int botBound = this.sceneHeight;
+
+            if(this.x  > rightBound){
+                this.x = leftBound + 1;
+            }
+            if(this.y > botBound){
+                this.y = topBound + 1;
+            }
+
+            if(this.x < leftBound){
+                this.x = rightBound - 1;
+            }
+
+            if(this.y < topBound){
+                this.y = botBound -1;
+            }
+        }
+
+    }
+
+    public boolean checkBoundRemove(){
+        // test scene boudns
         int leftBound = 0;
         int rightBound = this.sceneWidth;
         int topBound = 0;
         int botBound = this.sceneHeight;
 
         if(this.x  > rightBound){
-            this.x = leftBound + 1;
+            return true;
         }
         if(this.y > botBound){
-            this.y = topBound + 1;
+            return true;
         }
-
         if(this.x < leftBound){
-            this.x = rightBound - 1;
+            return true;
+        }
+        if(this.y < topBound){
+            return true;
         }
 
-        if(this.y < topBound){
-            this.y = botBound -1;
-        }
+        return false;
     }
 
     float distanceTo(Sprite s){
@@ -250,7 +279,11 @@ public class Sprite {
 
     double findAngleTo(Sprite s){
 
-        float angle = (float) Math.toDegrees(Math.atan2(s.centerY - centerY, s.centerX - centerX));
+        double yValue = s.centerY-centerY;
+        double xValue = s.centerX-centerX;
+
+        // theta from polar cords
+        float angle = (float) Math.toDegrees(Math.atan2(yValue, xValue));
 
         if(angle < 0){
             angle += 360;
@@ -265,7 +298,7 @@ public class Sprite {
     public void print(){
         System.out.println("X: " + this.x + ",Y: " + this.y + "CenterX: " + this.centerX + "CenterY: " + this.centerY +
                 ",dx:" + this.dx + ",dy:" + this.dy + ",ddx:" + this.ddx
-                + ",ddy:" + this.ddy + ", Speed:" + this.speed + "angle: " + this.moveAngle);
+                + ",ddy:" + this.ddy + ", Speed:" + this.speed + "mvoeangle: " + this.moveAngle + " Degree: " + this.imageDegree);
     }
 
 

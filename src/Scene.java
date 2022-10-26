@@ -8,42 +8,51 @@ import java.util.LinkedList;
 
 public class Scene extends JPanel implements ActionListener, KeyListener {
 
-    int size;
-
     int width = 800;
     int height = 600;
 
     Timer t = new Timer(30,this);
 
+    String timeLabel;
+    int elapsedTime = 0;
+    int second = 0;
+    int minute = 0;
+    int hour = 0;
+
     int x = 0;
     int y = 0;
 
 
+    int count = 0;
+    String score;
+
+    int life = 3;
+    String lifeBoard = "Life: " + life;
+    boolean notGameOver = true;
+
     Keyboard keys = new Keyboard();
-    int slimeNum = 3;
 
-    LinkedList<Sprite> slimeList = new LinkedList<Sprite>();
-
-
-    //Ammo bullet = new Ammo(this,"src/images/bullet.png",20,20);
     Snake snake = new Snake(this,"src/images/snake.png",65,65);
-    Slime slime = new Slime(this,"src/images/slime.png",80,80);
 
-    SlimeMob m = new SlimeMob(this);
+    Sound explode = new Sound("src/audio/explosion.wav");
+    Sound hit = new Sound ("src/audio/laserShoot.wav");
+
+    SlimeMob m;
     MassAmmo ammo;
 
     Ammo tempAmmo;
-
+    Slime tempSlime;
 
     // set keyboard keys
     public Scene(){
 
-        keys.createKeys();
         ammo = new MassAmmo(this);
-        //ammo.createBullets();
+        m = new SlimeMob(this);
+        ammo.createBullets();
         m.createMob();
+        keys.createKeys();
+
         this.setFocusable(true);
-        t.start();
         addKeyListener(this);
         this.setDoubleBuffered(true);
     }
@@ -52,10 +61,10 @@ public class Scene extends JPanel implements ActionListener, KeyListener {
 
         g.setColor(Color.GRAY);
         g.fillRect(x,y,this.width,this.height);
-        snake.draw(g);
-        //m.draw(g);
 
+        snake.draw(g);
         ammo.draw(g);
+        m.draw(g);
 
         this.repaint();
     }
@@ -72,19 +81,81 @@ public class Scene extends JPanel implements ActionListener, KeyListener {
         this.y = y;
     }
 
+    public void startTimer(){
+        if(notGameOver) {
+            t.start();
+        }
+    }
+
+    public void stopTimer(){
+        if(notGameOver){
+            t.stop();
+        }
+    }
+
+    public void restart(){
+
+    }
+
+    public String timeElapsed(){
+
+        elapsedTime += 30;
+        hour = (elapsedTime/3600000) % 60;
+        minute = (elapsedTime/60000) % 60;
+        second = (elapsedTime/1000) % 60;
+        return timeLabel = ("Hours:" + hour +" Minutes:" + minute + " Seconds:" + second);
+    }
+
+    public void init(){
+        keys.createKeys();
+        ammo = new MassAmmo(this);
+        ammo.createBullets();
+        m.createMob();
+
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
         snake.velocityDrag();
+        System.out.println(timeElapsed());
 
-        //m.slimeMove(snake);
-        //m.checkSlimeCollide(snake);
-        snake.checkKeys();
-        snake.update();
-        //bullet.update();
+        m.slimeMove(snake);
+        if(m.checkSlimeCollide(snake)){
+            life -= 1;
+            if(life <= 0){
+                lifeBoard = "Life: " + life;
+
+            }else{
+                lifeBoard = "Life: " + life;
+            }
+
+
+        }
+
+        // ammo.checkBulletHit(slime);
+        m.update();
+        checkBullet();
         ammo.update();
-        //m.update();
+        snake.update();
+        snake.checkKeys();
+    }
 
+    public void checkBullet(){
+        for(int i = 0; i < m.mobSize && i <m.slimeList.size(); i++){
+            tempSlime = m.slimeList.get(i);
+            if(ammo.checkBulletHit(tempSlime)){
+                explode.playSound();
+                tempSlime.reset();
+                count = count+1;
+                score = "Count :" + count;
+                System.out.println(score);
+            }
+        }
+    }
+
+    public Timer getTimer(){
+        return t;
     }
 
 
@@ -96,95 +167,6 @@ public class Scene extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         keys.checkKeys(e);
-        //int key = KeyEvent.VK_A;
-/*
-        if(keys.keyDown[KeyEvent.VK_W]){
-            snake.setAngle(270);
-            snake.changeSpeedBy(snake.value);
-            if (snake.speed > snake.maxSpeed) {
-                snake.setSpeed(snake.maxSpeed);
-            }
-            //snake.wPressed = true;
-            //snake.move();
-        }
-        if(keys.keyDown[KeyEvent.VK_D]){
-            snake.imageDegree += 5;
-
-            if(snake.imageDegree > 360){
-                snake.setAngle(360);
-            }else{
-                snake.setAngle((snake.imageDegree));
-            }
-
-            snake.changeSpeedBy(snake.value);
-            if (snake.speed > snake.maxSpeed) {
-                snake.setSpeed(snake.maxSpeed);
-            }
-            //snake.wPressed = true;
-            //snake.move();
-        }
-
-        if(keys.keyDown[KeyEvent.VK_A]){
-            snake.setAngle(180);
-            snake.changeSpeedBy(snake.value);
-            if (snake.speed > snake.maxSpeed) {
-                snake.setSpeed(snake.maxSpeed);
-            }
-            //snake.wPressed = true;
-            //snake.move();
-        }
-        if(keys.keyDown[KeyEvent.VK_S]){
-            snake.setAngle(90);
-            snake.changeSpeedBy(snake.value);
-            if (snake.speed > snake.maxSpeed) {
-                snake.setSpeed(snake.maxSpeed);
-            }
-            //snake.wPressed = true;
-            //snake.move();
-        }
-
-
-        if(keys.keyDown[KeyEvent.VK_SPACE]){
-            tempAmmo = new Ammo(this,snake.centerX,snake.centerY);
-            tempAmmo.weaponAttack(snake.imageDegree);
-            //tempAmmo.weaponAttack((int) Math.toRadians(snake.imgAngle));
-            tempAmmo.print();
-            ammo.addBullet(tempAmmo);
-        }
-
-        /*
-        if(e.getKeyCode() == KeyEvent.VK_W){
-            snake.setAngle(270);
-            snake.wPressed = true;
-            snake.move();
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_A) {
-            snake.setAngle(180);
-            snake.aPressed = true;
-            snake.move();
-        }
-        if (e.getKeyCode() == KeyEvent.VK_S) {
-            snake.setAngle(90);
-            snake.sPressed = true;
-            snake.move();
-        }
-        if (e.getKeyCode() == KeyEvent.VK_D) {
-            snake.setAngle(0);
-            snake.dPressed = true;
-            snake.move();
-        }
-
-        if(e.getKeyCode() == KeyEvent.VK_SPACE){
-
-            tempAmmo = new Ammo(this,snake.centerX,snake.centerY);
-            tempAmmo.weaponAttack(snake.imageDegree);
-            //tempAmmo.weaponAttack((int) Math.toRadians(snake.imgAngle));
-            tempAmmo.print();
-            ammo.addBullet(tempAmmo);
-        }
-
-         */
 
     }
 
@@ -192,9 +174,5 @@ public class Scene extends JPanel implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent e) {
         keys.clearKeys(e);
 
-        //snake.aPressed = false;
-        //snake.wPressed = false;
-        //snake.sPressed = false;
-        //snake.dPressed = false;
     }
 }

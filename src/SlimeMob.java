@@ -7,14 +7,13 @@ public class SlimeMob{
     LinkedList<Slime> slimeList = new LinkedList<Slime>();
     Sound hurt = new Sound("src/audio/hitHurt.wav");
 
-    int mobSize = 5;
+    int mobSize = 3;
 
-    Slime tempslime;
+    Slime tempSlime;
     Scene scene;
 
     public SlimeMob(Scene scene) {
         this.scene = scene;
-
 
     }
 
@@ -25,43 +24,46 @@ public class SlimeMob{
     }
 
     public void createMob(){
-        for(int i = 0; i < mobSize; i++){
+        for(int i = 0; i < mobSize;i++){
             slimeList.add(i,getNewSlime());
-
         }
     }
     public void slimeMove(Sprite s){
         for(int i = 0; i < mobSize; i++){
             slimeList.get(i).move(s);
-
         }
     }
 
     public void draw(Graphics g){
         for(int i = 0; i < mobSize; i++){
-            slimeList.get(i).draw(g);
+            tempSlime = slimeList.get(i);
+            tempSlime.draw(g);
 
         }
     }
+
+    public void increaseLimit(int inc){
+        mobSize += inc;
+        for(int i = mobSize - inc; i < mobSize;i++){
+            slimeList.add(i,getNewSlime());
+        }
+    }
+
     public Slime getNewSlime(){
         return (new Slime(scene,"src/images/slime.png",80,80));
     }
-    public void removeBullet(Slime s){
-        slimeList.remove(s);
-    }
 
-    public void slimeReset(int i){
-        slimeList.get(i).reset();
-    }
 
-    public void checkSlimeCollide(Sprite s){
-        for(int i = 0; i < mobSize; i++){
+    public boolean checkSlimeCollide(Sprite s){
+        for(int i = 0; i < mobSize && i < slimeList.size(); i++){
             if(s.spriteCollide(slimeList.get(i))){
                 slimeList.get(i).reset();
                 hurt.playSound();
-
+                return true;
+                //this.increaseLimit(1);
             }
         }
+        return false;
     }
 
 

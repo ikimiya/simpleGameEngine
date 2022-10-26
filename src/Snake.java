@@ -1,27 +1,27 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 
 
+
 public class Snake extends Sprite{
 
     // set height
 
-
-    boolean wPressed, aPressed, sPressed, dPressed;
-    int maxSpeed = 10;
-    int minSpeed = -10;
-
-    int angular = 0;
-
+    int maxSpeed = 5;
     int value = 3;
+
+    int delay = 500;
+    long currentTime;
+    long startShoot;
+    long lastShoot;
 
     public Snake(Scene scene, String imagePath, int width, int height) {
         super(scene,imagePath, width, height);
 
         this.setLocation(200,200);
-
 
         this.dx = 0;
         this.dy = 0;
@@ -63,126 +63,84 @@ public class Snake extends Sprite{
 
     public void checkKeys(){
 
-        // should always face front
         if(scene.keys.keyDown[KeyEvent.VK_W]){
-            this.setAngle(270);
+            this.imageDegree = 270;
+            this.setAngle(imageDegree);
             this.changeSpeedBy(this.value);
             if (this.speed > this.maxSpeed) {
                 this.setSpeed(this.maxSpeed);
             }
-            //snake.wPressed = true;
-            //snake.move();
         }
         if(scene.keys.keyDown[KeyEvent.VK_D]){
-            this.imageDegree += 5;
-
-            if(this.imageDegree > 360){
-                this.setAngle(360);
-            }else{
-                this.setAngle((this.imageDegree));
-            }
-
+            this.imageDegree = 360;
+            this.setAngle(imageDegree);
             this.changeSpeedBy(this.value);
             if (this.speed > this.maxSpeed) {
                 this.setSpeed(this.maxSpeed);
             }
-            //snake.wPressed = true;
-            //snake.move();
         }
-
         if(scene.keys.keyDown[KeyEvent.VK_A]){
-            this.imageDegree += 5;
-
-            if(this.imageDegree > 360){
-                this.setAngle(360);
-            }else{
-                this.setAngle((this.imageDegree));
-            }
+            this.imageDegree = 180;
+            this.setAngle(imageDegree);
             this.changeSpeedBy(this.value);
             if (this.speed > this.maxSpeed) {
                 this.setSpeed(this.maxSpeed);
             }
-            //snake.wPressed = true;
-            //snake.move();
         }
         if(scene.keys.keyDown[KeyEvent.VK_S]){
-            this.setAngle(90);
+            this.imageDegree = 90;
+            this.setAngle(imageDegree);
             this.changeSpeedBy(this.value);
             if (this.speed > this.maxSpeed) {
                 this.setSpeed(this.maxSpeed);
             }
-            //snake.wPressed = true;
-            //snake.move();
         }
-
-
+        if(scene.keys.keyDown[KeyEvent.VK_W] && scene.keys.keyDown[KeyEvent.VK_D]){
+            this.imageDegree = 315;
+            this.setAngle(imageDegree);
+            this.changeSpeedBy(this.value);
+            if (this.speed > this.maxSpeed) {
+                this.setSpeed(this.maxSpeed);
+            }
+        }
+        if(scene.keys.keyDown[KeyEvent.VK_W] && scene.keys.keyDown[KeyEvent.VK_A]){
+            this.imageDegree = 225;
+            this.setAngle(imageDegree);
+            this.changeSpeedBy(this.value);
+            if (this.speed > this.maxSpeed) {
+                this.setSpeed(this.maxSpeed);
+            }
+        }
+        if(scene.keys.keyDown[KeyEvent.VK_S] && scene.keys.keyDown[KeyEvent.VK_D]){
+            this.imageDegree = 45;
+            this.setAngle(imageDegree);
+            this.changeSpeedBy(this.value);
+            if (this.speed > this.maxSpeed) {
+                this.setSpeed(this.maxSpeed);
+            }
+        }
+        if(scene.keys.keyDown[KeyEvent.VK_S] && scene.keys.keyDown[KeyEvent.VK_A]){
+            this.imageDegree = 135;
+            this.setAngle(imageDegree);
+            this.changeSpeedBy(this.value);
+            if (this.speed > this.maxSpeed) {
+                this.setSpeed(this.maxSpeed);
+            }
+        }
         if(scene.keys.keyDown[KeyEvent.VK_SPACE]){
-            scene.tempAmmo = new Ammo(scene,this.centerX,this.centerY);
-            scene.tempAmmo.weaponAttack(this.imageDegree);
-            //tempAmmo.weaponAttack((int) Math.toRadians(snake.imgAngle));
-            scene.tempAmmo.print();
-            scene.ammo.addBullet(scene.tempAmmo);
-        }
 
+                currentTime = System.currentTimeMillis();
+
+                startShoot = currentTime - lastShoot;
+                if (startShoot > delay) {
+                    lastShoot = currentTime;
+                    scene.hit.playSound();
+                    scene.tempAmmo = new Ammo(scene, 0,0);
+                    scene.tempAmmo.weaponAttack(this.imageDegree,this.centerX, this.centerY);
+                    scene.ammo.addBullet(scene.tempAmmo);
+                }
+        }
 
     }
 
-
-
-
-    public void move(){
-        // angle change for diagonal movement
-        if(wPressed && dPressed){
-            this.setAngle(-45);
-            changeSpeedBy(value);
-            if(this.speed > this.maxSpeed){
-                this.setSpeed(maxSpeed);
-            }
-        }
-        if(wPressed && aPressed){
-            this.setAngle(-125);
-            changeSpeedBy(value);
-            if(this.speed > this.maxSpeed){
-                this.setSpeed(maxSpeed);
-            }
-        }
-        if(sPressed && dPressed){
-            this.setAngle(45);
-            changeSpeedBy(value);
-            if(this.speed > this.maxSpeed){
-                this.setSpeed(maxSpeed);
-            }
-        }
-        if(sPressed && aPressed){
-            this.setAngle(125);
-            changeSpeedBy(value);
-            if(this.speed > this.maxSpeed){
-                this.setSpeed(maxSpeed);
-            }
-        }
-
-        // WASD movement
-        if (wPressed) {
-            changeSpeedBy(value);
-            if (this.speed > this.maxSpeed) {
-                this.setSpeed(maxSpeed);
-            }
-        }else if (aPressed) {
-            changeSpeedBy(value);
-            if (this.speed > this.maxSpeed) {
-                this.setSpeed(maxSpeed);
-            }
-        }else if (sPressed) {
-            changeSpeedBy(value);
-            if (this.speed > this.maxSpeed) {
-                this.setSpeed(maxSpeed);
-            }
-        }else if (dPressed) {
-             changeSpeedBy(value);
-             if (this.speed > this.maxSpeed) {
-                 this.setSpeed(maxSpeed);
-             }
-         }
-
-    }
 }

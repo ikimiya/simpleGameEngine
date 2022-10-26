@@ -7,7 +7,6 @@ public class Sound {
     private String filePath;
     private Clip clip;
     private AudioInputStream audio;
-    private LineListener listener;
 
 
     public Sound(String path){
@@ -25,14 +24,14 @@ public class Sound {
             e.printStackTrace();
         }
 
-        listener = new LineListener() {
+        LineListener listener = new LineListener() {
             @Override
             public void update(LineEvent event) {
                 if (event.getType() != LineEvent.Type.STOP) {
                     return;
                 }
 
-                if(clip == null) {
+                if (clip == null) {
                     return;
                 }
 
