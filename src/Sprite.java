@@ -6,24 +6,29 @@ public class Sprite {
 
     Image image;
 
+    // height and width
     int width;
     int height;
 
+    // x and y position
     int x;
     int y;
 
+    // center of sprite
     int centerX;
     int centerY;
 
+    // velocityt and acceleration
     int dx;
     int dy;
-
     int ddx;
     int ddy;
 
+    // scnee height and width for boundary
     int sceneHeight;
     int sceneWidth;
 
+    // angle
     double imgAngle;
     double moveAngle;
     int imageDegree;
@@ -32,8 +37,10 @@ public class Sprite {
 
     Scene scene;
 
+    // state values
     boolean visible = true;
     boolean boundWarp = true;
+    boolean warped = false;
 
     public Sprite(Scene scene, String imagePath, int width, int height){
         this.scene = scene;
@@ -42,6 +49,8 @@ public class Sprite {
         this.image = new ImageIcon(imagePath).getImage();
         this.width = width;
         this.height = height;
+        this.setCenter(this.x,this.y);
+
     }
 
 
@@ -51,14 +60,7 @@ public class Sprite {
         this.sceneHeight = scene.height;
         this.x = x;
         this.y = y;
-    }
-
-
-
-
-    public void setScene(int width, int height){
-        this.sceneHeight = height;
-        this.sceneWidth = width;
+        this.setCenter(this.x,this.y);
     }
 
     public void setImage(String imagePath){
@@ -69,9 +71,9 @@ public class Sprite {
     public void setLocation(int x, int y){
         this.x = x;
         this.y = y;
-
     }
 
+    // set the center position of the sprite
     public void setCenter(int x, int y){
         this.centerX = x+(width/2);
         this.centerY = y+(height/2);
@@ -84,20 +86,16 @@ public class Sprite {
 
     // public void draw
     public void draw(Graphics g){
-
         if(visible){
             Graphics2D g2 = (Graphics2D)g;
-
-            AffineTransform original = g2.getTransform();
             AffineTransform test = AffineTransform.getRotateInstance(Math.toRadians(0),this.centerX,this.centerY);
-
             g2.setTransform(test);
             g2.drawImage(this.getImage(),this.x,this.y,this.width,this.height,null);
         }
-
     }
 
     public void update(){
+        // update values and checkboudns
         this.checkBounds();
         this.x += this.dx;
         this.y += this.dy;
@@ -106,53 +104,38 @@ public class Sprite {
 
     public void show(){
         this.visible = true;
-
     }
 
     public void hide(){
         this.visible = false;
     }
 
+    // calcuate velocity with angle
     public void calculateVector(){
         this.dx = (int) (this.speed * Math.cos((this.moveAngle)));
         this.dy = (int) (this.speed * Math.sin((this.moveAngle)));
     }
 
+    // set speed and calcualte velcoity
     public void setSpeed(double speed){
         this.speed = speed;
         this.calculateVector();
     }
 
-
-
+    // set value to change speed by
     public void changeSpeedBy(int diff){
         this.speed += diff;
         this.calculateVector();
     }
 
-    public void setImageAngle(int degree){
-
-    }
-
-    public void changeImageAngleBy(int degree){
-
-
-    }
-
-    public void setMoveAngle(int degree){
-
-    }
-
-    public void setMoveAngleBy(int degree){
-
-    }
-
+    // set angle with int
     public void setAngle(int degree){
         this.imageDegree = degree;
-        this.imgAngle = (double) Math.toRadians(degree);
-        this.moveAngle = (double) Math.toRadians(degree);
+        this.imgAngle = Math.toRadians(degree);
+        this.moveAngle = Math.toRadians(degree);
     }
 
+    // set angle with double
     public void setAngle(double degree){
         this.imageDegree = (int)degree;
         this.imgAngle = Math.toRadians(degree);
@@ -160,12 +143,7 @@ public class Sprite {
 
     }
 
-    public void changeAngleBy(int degree){
-        this.imageDegree = (int)degree;
-        this.imgAngle = Math.toRadians(degree);
-        this.moveAngle =  Math.toRadians(degree);
-    }
-
+    // cjecl sprite collision rectangualr
     public boolean spriteCollide(Sprite s){
 
         int myLeft = this.x;
@@ -189,9 +167,13 @@ public class Sprite {
         return true;
     }
 
-    // CheckBounds wrap mechanci
+    // CheckBounds wraping
     public void checkBounds(){
-        // test scene boudns
+
+        // used to check if sprite pass warp zone
+        warped = false;
+
+        // if allow sprite to warp
         if(boundWarp){
             int leftBound = 0;
             int rightBound = this.sceneWidth;
@@ -200,22 +182,26 @@ public class Sprite {
 
             if(this.x  > rightBound){
                 this.x = leftBound + 1;
+                warped = true;
             }
             if(this.y > botBound){
                 this.y = topBound + 1;
+                warped = true;
             }
 
             if(this.x < leftBound){
                 this.x = rightBound - 1;
+                warped = true;
             }
 
             if(this.y < topBound){
                 this.y = botBound -1;
+                warped = true;
             }
         }
-
     }
 
+    // check whether sprite pass bound use for Ammo class
     public boolean checkBoundRemove(){
         // test scene boudns
         int leftBound = 0;
@@ -239,20 +225,8 @@ public class Sprite {
         return false;
     }
 
-    float distanceTo(Sprite s){
-        int myX = this.x/2;
-        int myY = this.y/2;
-        int spriteX = s.x/2;
-        int spriteY = s.y/2;
-
-        float diffX = spriteX - myX;
-        float diffY = spriteY - myY;
-
-        // distacnce
-        return (float) Math.sqrt( (diffX * diffY)  + (diffY * diffY) );
-    }
-
     double distance(Sprite s){
+        // distance formula for two points
         int myX = this.centerX;
         int myY = this.centerY;
 
@@ -262,18 +236,7 @@ public class Sprite {
         int myDistance = Math.abs(otherX-myX)^2;
         int otherDistance = Math.abs(otherY-myY)^2;
 
-        int xDistance = Math.abs(otherX - myX);
-        int yDistance = Math.abs(otherY - myY);
-
-        //System.out.println("mydistance :" + myDistance + " Otherdistance: "+ otherDistance);
-
-        if(Math.abs(myX) == Math.abs(otherX)){
-            return(1);
-        }else{
-            return ((yDistance/xDistance));
-        }
-
-        // distance formula
+        return Math.sqrt(myDistance + otherDistance);
 
     }
 
@@ -282,19 +245,17 @@ public class Sprite {
         double yValue = s.centerY-centerY;
         double xValue = s.centerX-centerX;
 
-        // theta from polar cords
+        // polar coordinate formula to find angle
         float angle = (float) Math.toDegrees(Math.atan2(yValue, xValue));
 
         if(angle < 0){
             angle += 360;
         }
-
-        //this.setMoveAngle((int) angle);
-
         return angle;
 
     }
 
+    // debug mechanic
     public void print(){
         System.out.println("X: " + this.x + ",Y: " + this.y + "CenterX: " + this.centerX + "CenterY: " + this.centerY +
                 ",dx:" + this.dx + ",dy:" + this.dy + ",ddx:" + this.ddx

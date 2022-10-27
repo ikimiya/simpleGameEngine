@@ -1,12 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.concurrent.Flow;
 
 public class JavaMain extends JFrame{
-
-   // Scene scene = new Scene();
 
     public static void main(String[] args){
         new JavaMain();
@@ -14,11 +9,8 @@ public class JavaMain extends JFrame{
     }
 
     public JavaMain(){
-
-        Keyboard k = new Keyboard();
         createGui();
     }
-
 
     public JavaMain(String s){
         setTitle(s);
@@ -27,18 +19,24 @@ public class JavaMain extends JFrame{
     public void createGui(){
         JavaMain jm = new JavaMain("Game Engine");
 
+        // create Scene and initalize values
         Scene scene = new Scene();
-        bottomLabel bm = new bottomLabel(scene);
-        jm.add(bm.getBot(),BorderLayout.SOUTH);
-        jm.add(bm.getTop(),BorderLayout.NORTH);
-        jm.add(scene);
+        scene.setBackground("src/images/background.png");
+        scene.setPosition(0,0);
+        scene.setSize(800,600);
+        scene.init();
+
+        // create top and bottom labels
+        GameLabel gLabel = new GameLabel(scene,jm);
+        jm.add(gLabel.getBot(),BorderLayout.SOUTH);
+        jm.add(gLabel.getTop(),BorderLayout.NORTH);
+        jm.add(scene,BorderLayout.CENTER);
 
         jm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jm.setSize(800,600);
         jm.setVisible(true);
         jm.setResizable(true);
         jm.setLocationRelativeTo(null);
-
     }
 
 

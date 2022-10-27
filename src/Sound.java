@@ -4,95 +4,46 @@ import java.io.IOException;
 
 public class Sound {
 
-    private String filePath;
+    // Class for audio
     private Clip clip;
     private AudioInputStream audio;
 
-
-    public Sound(String path){
-        filePath = path;
+    public Sound(String path) {
+        // get audio from file and check if compatible
         try {
             audio = AudioSystem.getAudioInputStream(new File(path));
             clip = AudioSystem.getClip();
-
-
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
             e.printStackTrace();
         }
-
-        LineListener listener = new LineListener() {
-            @Override
-            public void update(LineEvent event) {
-                if (event.getType() != LineEvent.Type.STOP) {
-                    return;
-                }
-
-                if (clip == null) {
-                    return;
-                }
-
-                clip.close();
-            }
-        };
-
-    }
-
-    public void changeSound(String path){
-        filePath = path;
-    }
-
-    public void updateSound() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
     }
 
     public void playSound(){
 
-        boolean playing = clip.isRunning();
-        if(playing) {
+        // check if clip is running
+        boolean clipRunning = clip.isRunning();
+        if(clipRunning) {
             return;
         }
 
-        boolean lineOpen = clip.isOpen();
-        if(!lineOpen) {
-            openLine();
+        // check is not open
+        boolean clipOpen = clip.isOpen();
+        if(!clipOpen) {
+            openClip();
         }
 
+        // reset clip set wav to 0 and start
         clip.setFramePosition(0);
         clip.start();
-
-        /*
-        try {
-            clip.open(audio);
-
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally{
-
-        }
-
-         */
     }
 
-    public void openLine(){
+    public void openClip(){
         try {
             clip.open(audio);
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (LineUnavailableException | IOException e) {
             e.printStackTrace();
         }
-
-
-
     }
-
-
-
 
 }

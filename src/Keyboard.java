@@ -1,18 +1,16 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
+
 
 public class Keyboard implements KeyListener {
 
-
+    // create Array of boolean null
     boolean[] keyDown = new boolean[256];
-    int currentkey = -1;
 
-    public Keyboard(){
+    // -1 = null int
+    int currentKey = -1;
 
-    }
-
+    // initals keys as false
     public void createKeys(){
         for(int i = 0; i < 256; i++){
             keyDown[i] = false;
@@ -20,13 +18,15 @@ public class Keyboard implements KeyListener {
         //System.out.println(keyDown[0]);
     }
 
+    // when release set keys to false
     public void clearKeys(KeyEvent e){
-        currentkey = -1;
+        currentKey = -1;
         keyDown[e.getKeyCode()] = false;
     }
 
+    // if press check keys
     public void checkKeys(KeyEvent e){
-        currentkey = e.getKeyCode();
+        currentKey = e.getKeyCode();
         keyDown[e.getKeyCode()] = true;
     }
 
@@ -37,12 +37,10 @@ public class Keyboard implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println(e.getKeyCode());
+        //System.out.println(e.getKeyCode());
     }
-
     @Override
     public void keyReleased(KeyEvent e) {
-
     }
 
 }
