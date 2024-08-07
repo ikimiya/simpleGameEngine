@@ -1,0 +1,10 @@
+How to use mpc
+
+in source file in projectA.mpc add cpp file
+
+then run code to update the files
+perl ../MPC/mwc.pl -type make 
+
+then
+make all
+and to run ./ProjectA.exe 

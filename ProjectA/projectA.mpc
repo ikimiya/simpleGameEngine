@@ -1,0 +1,35 @@
+// $Id: ProjectA.mpc 
+
+
+project (ProjectA) {
+  exename = ProjectA
+  install = .
+ 
+  specific (make, gnuace) {
+    compile_flags += -std=c++11
+  }
+
+  Source_Files {
+      FileRead.cpp
+      Frequency.cpp
+      AnalyzeCipher.cpp
+      KeywordD.cpp
+      KeywordT.cpp
+      AnagramT.cpp
+      CaesarT.cpp
+      CaesarD.cpp
+      Words.cpp
+      Decrypter.cpp
+      main.cpp
+
+
+  }
+
+    Header_Files {
+    
+    }
+
+
+  Template_Files {
+  }
+}
